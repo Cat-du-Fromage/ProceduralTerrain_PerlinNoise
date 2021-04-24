@@ -1,33 +1,79 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class MapGenerator : MonoBehaviour
 {
-    public int mapWith;
+    public enum DrawMode
+    {
+        NoiseMap,
+        ColourMap
+    };
+    public DrawMode drawMode;
+
+    public int mapWidth;
     public int mapHeight;
     public float noiseScale;
 
+    public int octaves;
+    [Range(0,1)]
+    public float persistance;
+    public float lacunarity;
+
+    public int seed;
+    public float2 offset;
+
     public bool autoUpdate;
+
+    public TerrainType[] regions;
 
     public void GenerateMap()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapWith, mapHeight, noiseScale);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offset);
+
+        //Apply color depending of the map's height value and value height's value assign to each regions
+        Color[] colourMap = new Color[math.mul(mapHeight, mapWidth)];
+        for(int y = 0; y < mapHeight; y++)
+        {
+            for(int x = 0; x < mapWidth; x++)
+            {
+                float currentHeight = noiseMap[x, y];
+                for(int i = 0; i < regions.Length; i++)
+                {
+                    if(currentHeight <= regions[i].height)
+                    {
+                        colourMap[math.mad(y, mapWidth, x)] = regions[i].colour;
+                        break;
+                    }
+                }
+            }
+        }
 
         MapDisplay display = FindObjectOfType<MapDisplay>();
-        display.DrawNoiseMap(noiseMap);
+        if(drawMode == DrawMode.NoiseMap)
+        {
+            display.DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
+        }
+        else if(drawMode == DrawMode.ColourMap)
+        {
+            display.DrawTexture(TextureGenerator.TextureFromColourMap(colourMap, mapWidth, mapHeight));
+        }
     }
-    /*
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
-    void Update()
+    private void OnValidate()
     {
-        
+        if (mapWidth < 1) { mapWidth = 1;}
+        if (mapHeight < 1) { mapHeight = 1;}
+        if (lacunarity < 1) { lacunarity = 1;}
+        if (octaves < 0) { octaves = 0;}
     }
-    */
+}
+
+[System.Serializable]
+public struct TerrainType
+{
+    public string name;
+    public float height;
+    public Color colour;
 }
