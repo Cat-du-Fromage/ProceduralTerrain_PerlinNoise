@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
+using Unity.Entities;
+using Unity.Jobs;
 
 public static class MeshGenerator
 {
-    public static void GenerateTerrainMesh(float[,] heightMap)
+    public static MeshData GenerateTerrainMesh(float[,] heightMap)
     {
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
@@ -20,7 +22,7 @@ public static class MeshGenerator
             for (int x = 0; x < width; x++)
             {
                 meshData.vertices[vertexIndex] = new float3(topLeftX + x, heightMap[x, y], topLeftZ - y); //we search for the top left vertice of the square
-
+                meshData.uvs[vertexIndex] = new float2(x / (float)width, y / (float)height);
                 if(x < width-1 && y < height - 1)
                 {
                     meshData.AddTriangle(vertexIndex ,vertexIndex+width+1, vertexIndex+width);
@@ -30,21 +32,22 @@ public static class MeshGenerator
                 vertexIndex++;
             }
         }
+        return meshData;
     }
 }
 
 public class MeshData
 {
-    public float3[] vertices;
+    public Vector3[] vertices;
     public int[] triangles;
-    public float2[] uvs;
+    public Vector2[] uvs;
 
     int triangleIndex;
 
     public MeshData(int meshWidth, int meshHeight)
     {
-        vertices = new float3[math.mul(meshWidth, meshHeight)];
-        uvs = new float2[math.mul(meshWidth, meshHeight)];
+        vertices = new Vector3[math.mul(meshWidth, meshHeight)];
+        uvs = new Vector2[math.mul(meshWidth, meshHeight)];
         triangles = new int[math.mul(math.mul((meshWidth-1), (meshHeight-1)), 6)];
     }
 
@@ -54,5 +57,15 @@ public class MeshData
         triangles[triangleIndex+1] = b;
         triangles[triangleIndex+2] = c;
         triangleIndex += 3;
+    }
+
+    public Mesh CreateMesh()
+    {
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+        mesh.RecalculateNormals();
+        return mesh;
     }
 }
