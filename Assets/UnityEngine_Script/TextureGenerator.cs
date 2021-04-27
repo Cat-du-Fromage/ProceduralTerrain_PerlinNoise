@@ -17,8 +17,11 @@ public static class TextureGenerator
     public static Texture2D TextureFromHeightMap(float[,] heightMap)
     {
         //first take length of the grid (width and height)
+        Debug.Log($"HEIGHTMAP LENGTH : {heightMap.Length}");
         int width = heightMap.GetLength(0); // 0 = array[0]
         int height = heightMap.GetLength(1); // 1 = array[1]
+        Debug.Log($"HEIGHTMAP LENGTH WIDTH : {width}");
+        Debug.Log($"HEIGHTMAP LENGTH HEIGHT : {height}");
         //====================================
         //COLOR IS DEFINED HERE
         //====================================
@@ -30,6 +33,7 @@ public static class TextureGenerator
                 colourMap[math.mad(y, width, x)] = Color.Lerp(Color.black, Color.white, heightMap[x, y]); // y * width gives row we currently in (in Color[]) and + x gives the column
             }
         }
+        Debug.Log($"HEIGHTMAP LENGTH : {heightMap.Length}");
         //====================================
         return TextureFromColourMap(colourMap, width, height);
     }
