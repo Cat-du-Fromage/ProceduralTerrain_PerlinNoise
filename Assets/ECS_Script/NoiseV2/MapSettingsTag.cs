@@ -9,6 +9,12 @@ public struct MapSettingsTag : IComponentData
     public int width;
     public int height;
     public float scale;
+    public int octaves;
+    [Range(0, 1)]
+    public float persistance;
+    public float lacunarity;
+    public float2 offset;
+    public int seed;
     [Range(0, 2)]
     public int drawMode;
 }

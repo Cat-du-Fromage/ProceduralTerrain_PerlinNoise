@@ -3,15 +3,19 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 
-[Serializable]
 public struct NoiseMapData : IComponentData{}
-[Serializable]
+
 public struct width : IComponentData
 {
     public int value;
 }
-[Serializable]
+
 public struct height : IComponentData
+{
+    public int value;
+}
+
+public struct seed : IComponentData
 {
     public int value;
 }
@@ -24,6 +28,26 @@ public struct scale : IComponentData
 public struct noiseMapBuffer : IBufferElementData
 {
     public float value;
+}
+
+public struct octavesData : IComponentData
+{
+    public int value;
+}
+
+public struct persistanceData : IComponentData
+{
+    public float value;
+}
+
+public struct lacunarityData : IComponentData
+{
+    public float value;
+}
+
+public struct offsetData : IComponentData
+{
+    public float2 value;
 }
 
 public class textureData : IComponentData
