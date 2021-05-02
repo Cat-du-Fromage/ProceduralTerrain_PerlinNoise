@@ -14,9 +14,14 @@ public static class Noise
     /// CAREFUL float2(x,y) is not equal to float[,]
     /// float[x,y] is a 2d array than can store multiple data at a given index(x,y) where float2(x,y) is store ONLY 2 data(oone for x, one for y!
     /// </summary>
-    /// <param name="mapWidth"></param>
+    /// <param name="mapWidth">surface</param>
     /// <param name="mapHeight"></param>
+    /// <param name="seed">random generation (see valheim)</param>
     /// <param name="scale"></param>
+    /// <param name="octaves">number of layers of noise map</param>
+    /// <param name="persistance">control amplitude decrease(0f -> 1f): 0.35 will make "moutains" smaller; a high value increase the influence of small features</param>
+    /// <param name="lacunarity">frequency: lacunarity calcul is lacunarity^octaves[]; a high value increases the amount if small features</param>
+    /// <param name="offset"></param>
     /// <returns></returns>
     public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, float2 offset)
     {

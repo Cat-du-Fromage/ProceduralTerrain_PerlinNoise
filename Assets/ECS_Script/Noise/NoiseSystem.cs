@@ -7,6 +7,7 @@ using Unity.Transforms;
 /// <summary>
 /// This is Only to test the limit of static class
 /// </summary>
+/*
 public class NoiseSystem : SystemBase
 {
     private float test;
@@ -32,6 +33,7 @@ public class NoiseSystem : SystemBase
         _em.AddComponent<NoiseMapBuffer>(plan);
         _em.SetComponentData(plan, new NoisetestData { width = 3 });
         test = 0;
+*/
         /*
         BlobBuilder builder = new BlobBuilder(Allocator.TempJob);
         ref MapSegments mapSegments = ref builder.ConstructRoot<MapSegments>();
@@ -49,7 +51,7 @@ public class NoiseSystem : SystemBase
         blobAsset = builder.CreateBlobAssetReference<MapSegments>(Allocator.Persistent);
         builder.Dispose();
         */
-
+        /*
     }
     protected override void OnUpdate()
     {
@@ -86,3 +88,4 @@ public class NoiseSystem : SystemBase
         _ecb.AddJobHandleForProducer(Dependency);
     }
 }
+        */
