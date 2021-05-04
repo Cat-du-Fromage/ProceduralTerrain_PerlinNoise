@@ -5,7 +5,8 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-
+using System.Diagnostics;
+/*
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public class MapSettingSystem : SystemBase
 {
@@ -14,6 +15,7 @@ public class MapSettingSystem : SystemBase
 
     NativeArray<float> nMapNativeArray;
     NativeArray<Color> colourMapNativeArray;
+    NativeArray<TerrainTypeData> terrains;
     protected override void OnCreate()
     {
         RequireSingletonForUpdate<MapSettingsTag>();
@@ -22,6 +24,8 @@ public class MapSettingSystem : SystemBase
 
     protected override void OnUpdate()
     {
+        Stopwatch sw = Stopwatch.StartNew();
+        sw.Start();
         Entity MapSettingsEntity = GetSingletonEntity<MapSettingsTag>();
         settingData = _em.GetComponentData<MapSettingsTag>(MapSettingsEntity);
 
@@ -38,6 +42,8 @@ public class MapSettingSystem : SystemBase
         _em.AddComponent<persistanceData>(MapSettingsEntity);
         _em.AddComponent<lacunarityData>(MapSettingsEntity);
         _em.AddComponent<offsetData>(MapSettingsEntity);
+
+        _em.AddBuffer<TerrainTypeBuffer>(MapSettingsEntity);
         //_em.AddComponent<colourArrayData>(MapSettingsEntity);
 
         #region Check Values
@@ -57,7 +63,8 @@ public class MapSettingSystem : SystemBase
         _em.SetComponentData(MapSettingsEntity, new persistanceData { value = settingData.persistance });
         _em.SetComponentData(MapSettingsEntity, new lacunarityData { value = lacunarity });
         _em.SetComponentData(MapSettingsEntity, new offsetData { value = settingData.offset });
-
+        sw.Stop();
+        UnityEngine.Debug.Log($"Elapsed = {sw.Elapsed}");// Elapsed = 00:00:00.0083416
         var widthData = GetComponent<width>(MapSettingsEntity).value;
         var heightData = GetComponent<height>(MapSettingsEntity).value;
         var seedData = GetComponent<seed>(MapSettingsEntity).value;
@@ -66,14 +73,27 @@ public class MapSettingSystem : SystemBase
         var persistanceData = GetComponent<persistanceData>(MapSettingsEntity).value;
         var lacunarityData = GetComponent<lacunarityData>(MapSettingsEntity).value;
         var offsetData = GetComponent<offsetData>(MapSettingsEntity).value;
+
+        //=====================================================================================================
+        //TerrainType DynamicBuffer
+        
+        //DynamicBuffer<TerrainTypeBuffer> terrainData = GetBuffer<TerrainTypeBuffer>(MapSettingsEntity);
+        //nMapNativeArray = new NativeArray<float>(8, Allocator.TempJob); //8 for now
+        //colourMapNativeArray = new NativeArray<Color>(8, Allocator.TempJob); //8 for now
+        //terrains = new NativeArray<TerrainTypeData>(8, Allocator.TempJob);
+
+        //nMapNativeArray.Dispose();
+        //colourMapNativeArray.Dispose();
+
+        //RegionsData terrainHeight = GetComponent<RegionsData>(MapSettingsEntity);
+        //RegionsColor terrainColor = GetComponent<RegionsColor>(MapSettingsEntity);
+        
         //=====================================================================================================
         //NATIVE ARRAY constructor (Noise Map, Color Map)
         //=====================================================================================================
         int mapSurface = math.mul(widthData, heightData);
         nMapNativeArray = new NativeArray<float>(mapSurface, Allocator.TempJob);
         colourMapNativeArray = new NativeArray<Color>(mapSurface, Allocator.TempJob);
-        //=====================================================================================================
-
         //=====================================================================================================
         // NOISE MAP VALUE
         //=====================================================================================================
@@ -193,3 +213,37 @@ public struct ColourMapJob : IJob
     }
 }
 
+public struct TerrainsData : IJob
+{
+    public NativeArray<float> terrainHeightData;
+    public NativeArray<Color> terrainColorData;
+    public NativeArray<TerrainTypeData> terrainTypeArray;
+    public RegionsData regHeight;
+    public RegionsColor regColor;
+
+    public void Execute()
+    {
+        for(int i = 0; i < terrainHeightData.Length; i++)
+        {
+            TerrainTypeData terrain = new TerrainTypeData();
+            switch (i)
+            {
+                case 0:
+                    terrain.name = "Ocean";
+                    terrain.height = regHeight.Ocean;
+                    terrain.colour = regColor.OceanColor;
+                    terrainTypeArray[i] = terrain;
+                    break;
+                case 1:
+                    terrain.name = "Coast";
+                    terrain.height = regHeight.Coast;
+                    terrain.colour = regColor.CoastColor;
+                    terrainTypeArray[i] = terrain;
+                    break;
+                
+            }
+        }
+    }
+}
+
+*/

@@ -54,13 +54,19 @@ public class textureData : IComponentData
 {
     public UnityEngine.Texture2D value;
 }
-/*
-public class colourArrayData : IComponentData
-{
-    public UnityEngine.Color[] value;
-}
-*/
+
 public class RendererData : IComponentData
 {
     public UnityEngine.Renderer value;
+}
+
+public struct drawModeData : IComponentData
+{
+    public int value;
+}
+
+public struct TerrainTypeBuffer : IBufferElementData
+{
+    public float height;
+    public UnityEngine.Color colour;
 }

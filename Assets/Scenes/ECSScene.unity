@@ -219,6 +219,102 @@ MonoBehaviour:
   textureRender: {fileID: 1127077277}
   meshFilter: {fileID: 1447743506}
   meshRenderer: {fileID: 1447743505}
+--- !u!1 &177369010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 177369012}
+  - component: {fileID: 177369015}
+  - component: {fileID: 177369014}
+  - component: {fileID: 177369011}
+  - component: {fileID: 177369013}
+  - component: {fileID: 177369016}
+  m_Layer: 0
+  m_Name: Event_MapGen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &177369011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177369010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4335e5f203ade3748be0d67da9195104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &177369012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177369010}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &177369013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177369010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc042170bef385542b736ca6de200ecc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &177369014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177369010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9556ca17f87c82a43b8e93979eece9b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &177369015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177369010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea7d7495833204790ba1d3a8755397f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ConversionMode: 0
+--- !u!114 &177369016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177369010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8d2735eab1ada04eb9ec22ac42a719a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &178160222
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,6 +920,8 @@ GameObject:
   - component: {fileID: 1364416402}
   - component: {fileID: 1364416405}
   - component: {fileID: 1364416404}
+  - component: {fileID: 1364416406}
+  - component: {fileID: 1364416408}
   m_Layer: 0
   m_Name: MapSettingsECS
   m_TagString: Untagged
@@ -845,15 +943,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
-  scale: -7.52
-  octaves: 38
-  persistance: 0.5
-  lacunarity: 0.3
+  scale: 10.82
+  octaves: 4
+  persistance: 1
+  lacunarity: 1.63
   offset:
-    x: 0.2
-    y: 3.96
-  seed: -53
-  drawMode: 0
+    x: 2.6
+    y: -0.15
+  seed: 65
+  drawMode: 1
 --- !u!4 &1364416403
 Transform:
   m_ObjectHideFlags: 0
@@ -896,6 +994,46 @@ MonoBehaviour:
   renderer: {fileID: 759915948}
   meshFilter: {fileID: 441589627}
   meshRenderer: {fileID: 441589626}
+--- !u!114 &1364416406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364416401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95a8c3ebd9c3ca847a6450867818bd85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Ocean: 0.3
+  Coast: 0.4
+  Sand: 0.45
+  Plain: 0.55
+  Forest: 0.6
+  Tundra: 0.7
+  Mountain: 0.9
+  Snow: 1
+--- !u!114 &1364416408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364416401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cc96e6beb3a8eb46a913dbb75cbe5eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OceanColor: {r: 0, g: 0.39215687, b: 1, a: 0}
+  CoastColor: {r: 0.27450982, g: 0.43137255, b: 0.6666667, a: 0}
+  SandColor: {r: 0.99215686, g: 0.93333334, b: 0.4509804, a: 0}
+  PlainColor: {r: 0.3137255, g: 0.54901963, b: 0.15686275, a: 0}
+  ForestColor: {r: 0.15686275, g: 0.3529412, b: 0.11764706, a: 0}
+  TundraColor: {r: 0.37254903, g: 0.27450982, b: 0.25490198, a: 0}
+  MountainColor: {r: 0.27450982, g: 0.19607843, b: 0.15686275, a: 0}
+  SnowColor: {r: 1, g: 1, b: 1, a: 0}
 --- !u!1 &1447743504
 GameObject:
   m_ObjectHideFlags: 0
