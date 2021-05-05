@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Jobs;
 using static Unity.Mathematics.noise;

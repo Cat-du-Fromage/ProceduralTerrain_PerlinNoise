@@ -82,6 +82,51 @@ public class MapDataInitSystem : SystemBase
         //sw.Stop();
         //UnityEngine.Debug.Log($"Elapsed = {sw.Elapsed}");
     }
+
+    public struct PerlinNoiseJob : IJob
+    {
+        public int mapWidth;
+        public int mapHeight;
+        public int seed;
+        public float scale;
+        public int octaves;
+        public float persistance;
+        public float lacunarity;
+        public float2 offset;
+
+        //returned Value
+        public NativeArray<float> noiseMap;
+        public NativeArray<float2> octavesArray;
+        public void Execute()
+        {
+            #region Random
+            //(offset(x,y) per octaves changes)
+            Random pRNG = new Random((uint)seed);
+            
+            for (int i = 0; i < octavesArray.Length;  i++)
+            {
+                float offsetX = pRNG.NextUInt(0, 100000) + offset.x;
+                float offsetY = pRNG.NextUInt(0, 100000) + offset.y;
+                octavesArray[i] = new float2(offsetX, offsetY);
+            }
+            #endregion Random
+            float maxNoiseHeight = float.MinValue;
+            float minNoiseHeight = float.MaxValue;
+
+            float halfWidth = math.half(mapWidth);
+            float halfHeight = math.half(mapHeight);
+
+            for(int y = 0; y < mapHeight; y++)
+            {
+                for (int x = 0; x < mapWidth; x++)
+                {
+                    float amplitude = 1;
+                    float frequency = 1;
+                    float noiseHeight = 0;
+                }
+            }
+        }
+    }
 }
 
 //TO DO : ADD PERLIN NOISE CALCUL job or job.witcode()
