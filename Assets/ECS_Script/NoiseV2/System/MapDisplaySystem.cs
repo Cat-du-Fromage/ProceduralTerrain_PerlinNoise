@@ -16,7 +16,7 @@ public class MapDisplaySystem : SystemBase
     EntityManager _em;
     Entity mapGenerator;
 
-    Stopwatch sw;
+    //Stopwatch sw;
     protected override void OnCreate()
     {
         var queryDescription = new EntityQueryDesc
@@ -29,8 +29,8 @@ public class MapDisplaySystem : SystemBase
     }
     protected override void OnStartRunning()
     {
-        sw = Stopwatch.StartNew();
-        sw.Start();
+        //sw = Stopwatch.StartNew();
+        //sw.Start();
         mapGenerator = GetSingletonEntity<NoiseMapData>();
     }
     protected override void OnUpdate()
@@ -78,13 +78,16 @@ public class MapDisplaySystem : SystemBase
             JobHandle jobHandle = colorMapJob.Schedule();
             jobHandle.Complete();
         }
-        else
+        //=====================================================================================================
+        // MESH MAP calculation
+        //=====================================================================================================
+        else if(drawmode == 2)
         {
 
         }
 
         //=====================================================================================================
-        // TEXTURE2D applied to tu plane
+        // TEXTURE2D applied to the plane (TextureJob and ColorJob)
         //=====================================================================================================
         if (drawmode == 0 || drawmode == 1)
         {
@@ -95,7 +98,7 @@ public class MapDisplaySystem : SystemBase
             texture2D.SetPixels(colorsMapArray);
             texture2D.Apply();
 
-            Renderer textureRender = _em.GetComponentData<DataRenderer>(mapGenerator).renderer;
+            Renderer textureRender = _em.GetComponentData<RendererData>(mapGenerator).value;
             textureRender.sharedMaterial.mainTexture = texture2D;
             textureRender.transform.localScale = new float3(mapWidth, 1, mapHeight);
             _em.SetComponentData(mapGenerator, new RendererData { value = textureRender });
@@ -107,8 +110,8 @@ public class MapDisplaySystem : SystemBase
         heightMapNativeArray.Dispose();
         _em.RemoveComponent<Event_MapGen_MapDisplay>(GetSingletonEntity<Event_MapGenTag>());
         #endregion Event Trigger End
-        sw.Stop();
-        UnityEngine.Debug.Log($"Elapsed Texture{drawmode} = {sw.Elapsed}");
+        //sw.Stop();
+        //UnityEngine.Debug.Log($"Elapsed Texture{drawmode} = {sw.Elapsed}");
     }
 
     /// <summary>
@@ -123,7 +126,6 @@ public class MapDisplaySystem : SystemBase
         public int mHeight;
         public void Execute()
         {
-            //colors. = new Color[math.mul(mWidth, mHeight)];
             for (int y = 0; y < mWidth; y++)
             {
                 for (int x = 0; x < mHeight; x++)

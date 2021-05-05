@@ -60,6 +60,16 @@ public class RendererData : IComponentData
     public UnityEngine.Renderer value;
 }
 
+public class MeshFilterData : IComponentData
+{
+    public UnityEngine.MeshFilter value;
+}
+
+public class MeshRendererData : IComponentData
+{
+    public UnityEngine.MeshRenderer value;
+}
+
 public struct drawModeData : IComponentData
 {
     public int value;
