@@ -5,6 +5,8 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using System.Diagnostics;
+using UnityEngine;
+using Unity.Rendering;
 using static Unity.Mathematics.noise;
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -76,6 +78,16 @@ public class MapDataInitSystem : SystemBase
         _em.SetComponentData(MapSettingsEntity, new offsetData { value = settingData.offset });
         _em.SetComponentData(MapSettingsEntity, new drawModeData { value = settingData.drawMode });
 
+        //_em.SetSharedComponentData(MapSettingsEntity, new RenderMesh { mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
+        if (settingData.drawMode == 0 || settingData.drawMode == 1)
+        {
+            _em.SetSharedComponentData(MapSettingsEntity, new RenderMesh { material = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).MatMap, mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
+        }
+        else if(settingData.drawMode == 2)
+        {
+            _em.SetSharedComponentData(MapSettingsEntity, new RenderMesh { material = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).MeshMat, mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
+        }
+
         int noiseMapSurface = math.mul(mapWidth, mapHeight);
         nMap = new NativeArray<float>(noiseMapSurface , Allocator.TempJob);
         octOffset = new NativeArray<float2>(octaves, Allocator.TempJob);
@@ -132,7 +144,7 @@ public class MapDataInitSystem : SystemBase
         {
             #region Random
             //(offset(x,y) per octaves changes)
-            Random pRNG = new Random((uint)seedJob);
+            Unity.Mathematics.Random pRNG = new Unity.Mathematics.Random((uint)seedJob);
             
             for (int i = 0; i < octOffsetArray.Length;  i++)
             {
@@ -192,25 +204,17 @@ public class MapDataInitSystem : SystemBase
     protected override void OnDestroy()
     {
         if (nMap.IsCreated)
-        {
             nMap.Dispose();
-        }
         if (octOffset.IsCreated)
-        {
             octOffset.Dispose();
-        }
     }
 
     protected override void OnStopRunning()
     {
         if (nMap.IsCreated)
-        {
             nMap.Dispose();
-        }
         if (octOffset.IsCreated)
-        {
             octOffset.Dispose();
-        }
     }
 }
 
