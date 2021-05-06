@@ -165,7 +165,53 @@ public class MapDisplaySystem : SystemBase
             }
         }
     }
+    /// <summary>
+    /// Mesh Generation
+    /// </summary>
+    [BurstCompile]
+    public struct MeshDataJob : IJob
+    {
+        public int widthJob;
+        public int heightJob;
+        public int triangleIndex;
+        public float4 trianglesVertexPos;
 
+        public NativeArray<float> noiseMapJob;
+        public NativeArray<float3> verticesJob;
+        public NativeArray<int> trianglesJob;
+        public NativeArray<float2> uvsJob;
+        public void Execute()
+        {
+            int vertexIndex = 0;
+            float topLeftX = (widthJob - 1) / -2f;
+            float topLeftZ = (heightJob - 1) / 2f;
+
+            for (int y = 0; y < heightJob; y++)
+            {
+                for (int x = 0; x < widthJob; x++)
+                {
+                    int4 tranglesVertex = new int4(vertexIndex, vertexIndex + widthJob + 1, vertexIndex + widthJob, vertexIndex + 1);
+
+                    verticesJob[vertexIndex] = new float3(topLeftX + x, noiseMapJob[math.mad(y, widthJob, x)], topLeftZ - y);
+                    uvsJob[vertexIndex] = new float2(x / (float)widthJob, y / (float)heightJob);
+
+                    if (x < widthJob - 1 && y < heightJob - 1)
+                    {
+                        trianglesJob[triangleIndex] = tranglesVertex.x;
+                        trianglesJob[triangleIndex + 1] = tranglesVertex.y;
+                        trianglesJob[triangleIndex + 2] = tranglesVertex.z;
+                        triangleIndex += 3;
+
+                        trianglesJob[triangleIndex] = tranglesVertex.y;
+                        trianglesJob[triangleIndex + 1] = tranglesVertex.x;
+                        trianglesJob[triangleIndex + 2] = tranglesVertex.w;
+                        triangleIndex += 3;
+                    }
+                    vertexIndex++;
+                }
+            }
+        }
+    }
     protected override void OnDestroy()
     {
         if (heightMapNativeArray.IsCreated)

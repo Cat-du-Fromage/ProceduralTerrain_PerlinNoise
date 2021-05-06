@@ -4,7 +4,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-
+/*
 public class MapMeshGeneratorSystem : SystemBase
 {
     protected override void OnUpdate()
@@ -52,28 +52,31 @@ public class MapMeshGeneratorSystem : SystemBase
             float topLeftX = (widthJob - 1) / -2f;
             float topLeftZ = (heightJob - 1) / 2f;
 
-            float4 tranglesVertex = new float4(vertexIndex, vertexIndex + widthJob + 1, vertexIndex + widthJob, vertexIndex + 1);
             for(int y = 0; y < heightJob; y++)
             {
                 for(int x = 0; x < widthJob; x++)
                 {
+                    int4 tranglesVertex = new int4(vertexIndex, vertexIndex + widthJob + 1, vertexIndex + widthJob, vertexIndex + 1);
+
                     verticesJob[vertexIndex] = new float3(topLeftX + x, noiseMapJob[math.mad(y,widthJob,x)], topLeftZ - y);
                     uvsJob[vertexIndex] = new float2(x/(float)widthJob, y/(float)heightJob);
+
                     if(x < widthJob-1 && y < heightJob -1)
                     {
-                        trianglesJob[triangleIndex] = vertexIndex;
-                        trianglesJob[triangleIndex + 1] = vertexIndex + widthJob + 1;
-                        trianglesJob[triangleIndex + 2] = vertexIndex + widthJob;
+                        trianglesJob[triangleIndex] = tranglesVertex.x;
+                        trianglesJob[triangleIndex + 1] = tranglesVertex.y;
+                        trianglesJob[triangleIndex + 2] = tranglesVertex.z;
                         triangleIndex += 3;
 
-                        trianglesJob[triangleIndex] = vertexIndex + widthJob + 1;
-                        trianglesJob[triangleIndex + 1] = vertexIndex;
-                        trianglesJob[triangleIndex + 2] = vertexIndex + 1;
+                        trianglesJob[triangleIndex] = tranglesVertex.y;
+                        trianglesJob[triangleIndex + 1] = tranglesVertex.x;
+                        trianglesJob[triangleIndex + 2] = tranglesVertex.w;
                         triangleIndex += 3;
                     }
-                    triangleIndex++;
+                    vertexIndex++;
                 }
             }
         }
     }
 }
+*/
