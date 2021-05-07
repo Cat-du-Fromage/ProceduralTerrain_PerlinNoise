@@ -25,8 +25,8 @@ public static class Noise
     /// <returns></returns>
     public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, float2 offset)
     {
-        Stopwatch stopWatch = new Stopwatch(); //Test Performance
-        stopWatch.Start();
+        //Stopwatch stopWatch = new Stopwatch(); //Test Performance
+        //stopWatch.Start();
 
         float[,] noiseMap = new float[mapWidth, mapHeight];
         #region Random Seed Generation
@@ -45,12 +45,10 @@ public static class Noise
             */
             //Careful the bigger the number in Next(parameter) the uglier the generation is
             //Since those value
-            float offsetX = prng.NextUInt(0, 100000) + offset.x;
-            float offsetY = prng.NextUInt(0, 100000) + offset.y;
+            float offsetX = prng.NextInt(-100000, 100000) + offset.x;
+            float offsetY = prng.NextInt(-100000, 100000) + offset.y;
             octaveOffsets[i] = new float2(offsetX, offsetY);
-            UnityEngine.Debug.Log($"octaves: {octaveOffsets[i]}");
         }
-        UnityEngine.Debug.Log($"seed generation: {seed}");
         #endregion Random Seed Generation
 
         if (scale <= 0)
@@ -78,12 +76,16 @@ public static class Noise
 
                 for (int i = 0; i < octaves; i++)
                 {
-                    float sampleX = ( (x-halfWidth) / math.mul(scale, frequency) ) + octaveOffsets[i].x;
-                    float sampleY = ( (y-halfHeight) / math.mul(scale, frequency) ) + octaveOffsets[i].y;
+                    //float sampleX = ( (x-halfWidth) / math.mul(scale, frequency) ) + octaveOffsets[i].x;
+                    //float sampleY = ( (y-halfHeight) / math.mul(scale, frequency) ) + octaveOffsets[i].y;
+
+                    float sampleX = math.mul((x - halfWidth) / scale, frequency) + octaveOffsets[i].x;
+                    float sampleY = math.mul((y - halfHeight) / scale, frequency) + octaveOffsets[i].y;
 
                     float2 sampleXY = new float2(sampleX, sampleY);
 
                     float perlinValue = math.mul(cnoise(sampleXY), 2) - 1; //float2 ok here since we calculate a value and do not store them;
+                    //float perlinValue = math.mul(snoise(sampleXY), 2) - 1; //float2 ok here since we calculate a value and do not store them;
                     noiseHeight += math.mul(perlinValue, amplitude);
 
                     amplitude = math.mul(amplitude, persistance); //persistance range (0 - > 1) and decrease each octave so the amplitude
@@ -115,8 +117,8 @@ public static class Noise
             }
         }
 
-        stopWatch.Stop();
-        UnityEngine.Debug.Log($"Noise Calculation : {stopWatch.ElapsedMilliseconds} ms");
+        //stopWatch.Stop();
+        //UnityEngine.Debug.Log($"Noise Calculation : {stopWatch.ElapsedMilliseconds} ms");
         return noiseMap;
     }
 }

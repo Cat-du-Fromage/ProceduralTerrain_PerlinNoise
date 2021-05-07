@@ -148,16 +148,16 @@ public class MapDataInitSystem : SystemBase
             
             for (int i = 0; i < octOffsetArray.Length;  i++)
             {
-                float offsetX = pRNG.NextUInt(0, 100000) + offsetJob.x;
-                float offsetY = pRNG.NextUInt(0, 100000) + offsetJob.y;
+                float offsetX = pRNG.NextInt(-100000, 100000) + offsetJob.x;
+                float offsetY = pRNG.NextInt(-100000, 100000) + offsetJob.y;
                 octOffsetArray[i] = new float2(offsetX, offsetY);
             }
             #endregion Random
             float maxNoiseHeight = float.MinValue;
             float minNoiseHeight = float.MaxValue;
 
-            float halfWidth = math.half(widthJob);
-            float halfHeight = math.half(heightJob);
+            float halfWidth = widthJob / 2f;
+            float halfHeight = heightJob / 2f;
 
             for(int y = 0; y < heightJob; y++)
             {
@@ -168,8 +168,10 @@ public class MapDataInitSystem : SystemBase
                     float noiseHeight = 0;
                     for(int i = 0; i< octavesJob; i++)
                     {
-                        float sampleX = ((x - halfWidth) / math.mul(scaleJob, frequency)) + octOffsetArray[i].x;
-                        float sampleY = ((y - halfHeight) / math.mul(scaleJob, frequency)) + octOffsetArray[i].y;
+                        //float sampleX = ((x - halfWidth) / math.mul(scaleJob, frequency)) + octOffsetArray[i].x;
+                        //float sampleY = ((y - halfHeight) / math.mul(scaleJob, frequency)) + octOffsetArray[i].y;
+                        float sampleX = math.mul((x - halfWidth) / scaleJob, frequency) + octOffsetArray[i].x;
+                        float sampleY = math.mul((y - halfHeight) / scaleJob, frequency) + octOffsetArray[i].y;
                         float2 sampleXY = new float2(sampleX, sampleY);
 
                         float pNoiseValue = cnoise(sampleXY);
