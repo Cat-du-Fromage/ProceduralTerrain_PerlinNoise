@@ -902,7 +902,7 @@ MonoBehaviour:
   seed: 10
   drawMode: 2
   heightMultiplier: 20
-  levelOfDetail: 1
+  levelOfDetail: 0
 --- !u!4 &1364416403
 Transform:
   m_ObjectHideFlags: 0

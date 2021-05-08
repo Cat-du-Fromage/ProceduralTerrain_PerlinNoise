@@ -35,13 +35,14 @@ public class MapDataInitSystem : SystemBase
 
         #region Check Values
         float mapScale = settingData.scale <= 0 ? 0.0001f : settingData.scale;
-        int mapWidth = settingData.width < 1 ? 1 : settingData.width;
-        int mapHeight = settingData.height < 1 ? 1 : settingData.height;
+        //int mapWidth = settingData.width < 1 ? 1 : settingData.width;
+        //int mapHeight = settingData.height < 1 ? 1 : settingData.height;
         float lacunarity = settingData.lacunarity < 1f ? 1f : settingData.lacunarity;
         int mapSeed = settingData.seed < 0 ? 1 : settingData.seed;
         int octaves = settingData.octaves < 0 ? 1 : settingData.octaves;
         #endregion Check Values
 
+        //NEED TO CONVERT ALL THIS SHIT TO A BLOB ASSET!
         _em.AddComponent<NoiseMapData>(MapSettingsEntity);
         _em.AddComponentData(MapSettingsEntity, new mapChunkSizeData {value = 241});
         _em.AddComponentData(MapSettingsEntity, new mapHeightMultiplierData { value = settingData.heightMultiplier });

@@ -13,7 +13,7 @@ public class MapGenerator : MonoBehaviour
     };
     public DrawMode drawMode;
 
-    const int mapChunkSize = 241; // must be a factor of width -1 => in our case width - 1 = 240
+    public const int mapChunkSize = 241; // must be a factor of width -1 => in our case width - 1 = 240
 
     [Range(0, 6)]
     public int levelOfDetail;
