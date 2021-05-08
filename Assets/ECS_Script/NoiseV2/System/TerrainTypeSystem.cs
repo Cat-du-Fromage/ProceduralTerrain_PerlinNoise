@@ -72,8 +72,8 @@ public class TerrainTypeSystem : SystemBase
     [BurstCompile]
     public struct TerrainTypeJob : IJob
     {
-        public NativeArray<float> regionHeightJob;
-        public NativeArray<Color> regionColorJob;
+        [ReadOnly]public NativeArray<float> regionHeightJob;
+        [ReadOnly]public NativeArray<Color> regionColorJob;
         public DynamicBuffer<TerrainTypeBuffer> RegionsDataBuffer;
         public void Execute()
         {
@@ -90,24 +90,16 @@ public class TerrainTypeSystem : SystemBase
     protected override void OnStopRunning()
     {
         if (regionsHeight.IsCreated)
-        {
             regionsHeight.Dispose();
-        }
         if (regionsColor.IsCreated)
-        {
             regionsColor.Dispose();
-        }
     }
 
     protected override void OnDestroy()
     {
         if (regionsHeight.IsCreated)
-        {
             regionsHeight.Dispose();
-        }
         if (regionsColor.IsCreated)
-        {
             regionsColor.Dispose();
-        }
     }
 }

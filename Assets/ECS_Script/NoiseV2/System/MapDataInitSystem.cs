@@ -33,61 +33,57 @@ public class MapDataInitSystem : SystemBase
         MapSettingsEntity = GetSingletonEntity<MapSettingsTag>();
         settingData = _em.GetComponentData<MapSettingsTag>(MapSettingsEntity);
 
-        _em.AddComponent<NoiseMapData>(MapSettingsEntity);
-        _em.AddComponent<width>(MapSettingsEntity);
-        _em.AddComponent<height>(MapSettingsEntity);
-        _em.AddComponent<scale>(MapSettingsEntity); //small = lot of small feature, big = biger features
-        _em.AddComponent<seed>(MapSettingsEntity);
-        _em.AddBuffer<noiseMapBuffer>(MapSettingsEntity);
-        _em.AddComponent<textureData>(MapSettingsEntity);
-        _em.AddComponent<RendererData>(MapSettingsEntity);
-        _em.AddComponent<MeshFilterData>(MapSettingsEntity);
-        _em.AddComponent<MeshRendererData>(MapSettingsEntity);
-        _em.AddComponent<octavesData>(MapSettingsEntity);
-        _em.AddComponent<persistanceData>(MapSettingsEntity);
-        _em.AddComponent<lacunarityData>(MapSettingsEntity);
-        _em.AddComponent<offsetData>(MapSettingsEntity);
-        _em.AddComponent<drawModeData>(MapSettingsEntity);
-        _em.AddBuffer<TerrainTypeBuffer>(MapSettingsEntity);
+        #region Check Values
+        float mapScale = settingData.scale <= 0 ? 0.0001f : settingData.scale;
+        int mapWidth = settingData.width < 1 ? 1 : settingData.width;
+        int mapHeight = settingData.height < 1 ? 1 : settingData.height;
+        float lacunarity = settingData.lacunarity < 1f ? 1f : settingData.lacunarity;
+        int mapSeed = settingData.seed < 0 ? 1 : settingData.seed;
+        int octaves = settingData.octaves < 0 ? 1 : settingData.octaves;
+        #endregion Check Values
 
+        _em.AddComponent<NoiseMapData>(MapSettingsEntity);
+        _em.AddComponentData(MapSettingsEntity, new mapChunkSizeData {value = 241});
+        _em.AddComponentData(MapSettingsEntity, new mapHeightMultiplierData { value = settingData.heightMultiplier });
+        _em.AddComponentData(MapSettingsEntity, new width {value = _em.GetComponentData<mapChunkSizeData>(MapSettingsEntity).value });
+        _em.AddComponentData(MapSettingsEntity, new height { value = _em.GetComponentData<mapChunkSizeData>(MapSettingsEntity).value });
+        _em.AddComponentData(MapSettingsEntity, new scale { value = mapScale}); //small = lot of small feature, big = biger features
+        _em.AddComponentData(MapSettingsEntity, new seed { value = mapSeed });
+        //_em.AddComponent<textureData>(MapSettingsEntity); // THE FUCK IS THIS?!
+        _em.AddComponentData(MapSettingsEntity, new octavesData { value = octaves });
+        _em.AddComponentData(MapSettingsEntity, new persistanceData { value = settingData.persistance });
+        _em.AddComponentData(MapSettingsEntity, new lacunarityData { value = lacunarity });
+        _em.AddComponentData(MapSettingsEntity, new offsetData { value = settingData.offset });
+        _em.AddComponentData(MapSettingsEntity, new drawModeData { value = settingData.drawMode });
+        _em.AddComponentData(MapSettingsEntity, new levelOfDetailData { value = settingData.levelOfDetail });
+        _em.AddBuffer<noiseMapBuffer>(MapSettingsEntity);
+        _em.AddBuffer<TerrainTypeBuffer>(MapSettingsEntity);
+        /*
+        _em.AddComponentData(MapSettingsEntity, new RendererData { value = _em.GetComponentData<DataRenderer>(MapSettingsEntity).renderer });
+        _em.AddComponentData(MapSettingsEntity, new MeshFilterData { value = _em.GetComponentData<DataRenderer>(MapSettingsEntity).meshFilter });
+        _em.AddComponentData(MapSettingsEntity, new MeshRendererData { value = _em.GetComponentData<DataRenderer>(MapSettingsEntity).meshRenderer });
+        */
+        _em.RemoveComponent<DataRenderer>(MapSettingsEntity);
     }
 
     protected override void OnUpdate()
     {
-        #region Check Values
-        float scale = settingData.scale <= 0 ? 0.0001f : settingData.scale;
-        int mapWidth = settingData.width < 1 ? 1 : settingData.width;
-        int mapHeight = settingData.height < 1 ? 1 : settingData.height;
-        float lacunarity = settingData.lacunarity < 1f ? 1f : settingData.lacunarity;
-        int seed = settingData.seed < 0 ? 1 : settingData.seed;
-        int octaves = settingData.octaves < 0 ? 1 : settingData.octaves;
-        #endregion Check Values
-
-        _em.SetComponentData(MapSettingsEntity, new RendererData { value = _em.GetComponentData<DataRenderer>(MapSettingsEntity).renderer });
-        _em.SetComponentData(MapSettingsEntity, new MeshFilterData { value = _em.GetComponentData<DataRenderer>(MapSettingsEntity).meshFilter });
-        _em.SetComponentData(MapSettingsEntity, new MeshRendererData { value = _em.GetComponentData<DataRenderer>(MapSettingsEntity).meshRenderer });
-        _em.RemoveComponent<DataRenderer>(MapSettingsEntity);
-
-        _em.SetComponentData(MapSettingsEntity, new width { value = mapWidth });
-        _em.SetComponentData(MapSettingsEntity, new height { value = mapHeight });
-        _em.SetComponentData(MapSettingsEntity, new seed { value = seed });
-        _em.SetComponentData(MapSettingsEntity, new scale { value = scale });
-        _em.SetComponentData(MapSettingsEntity, new octavesData { value = octaves });
-        _em.SetComponentData(MapSettingsEntity, new persistanceData { value = settingData.persistance });
-        _em.SetComponentData(MapSettingsEntity, new lacunarityData { value = lacunarity });
-        _em.SetComponentData(MapSettingsEntity, new offsetData { value = settingData.offset });
-        _em.SetComponentData(MapSettingsEntity, new drawModeData { value = settingData.drawMode });
-
-        //_em.SetSharedComponentData(MapSettingsEntity, new RenderMesh { mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
+        int mapWidth = GetComponent<width>(MapSettingsEntity).value;
+        int mapHeight = GetComponent<height>(MapSettingsEntity).value;
+        int octaves = GetComponent<octavesData>(MapSettingsEntity).value;
+        int mapSeed = GetComponent<seed>(MapSettingsEntity).value;
+        float mapScale = GetComponent<scale>(MapSettingsEntity).value;
+        float lacunarity = GetComponent<lacunarityData>(MapSettingsEntity).value;
+        
         if (settingData.drawMode == 0 || settingData.drawMode == 1)
         {
-            _em.SetSharedComponentData(MapSettingsEntity, new RenderMesh { material = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).MatMap, mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
+            _em.AddSharedComponentData(MapSettingsEntity, new RenderMesh { material = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).MatMap, mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
         }
         else if(settingData.drawMode == 2)
         {
-            _em.SetSharedComponentData(MapSettingsEntity, new RenderMesh { material = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).MeshMat, mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
+            _em.AddSharedComponentData(MapSettingsEntity, new RenderMesh { material = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).MeshMat, mesh = _em.GetComponentData<MapMaterialData>(MapSettingsEntity).mesh });
         }
-
+        
         int noiseMapSurface = math.mul(mapWidth, mapHeight);
         nMap = new NativeArray<float>(noiseMapSurface , Allocator.TempJob);
         octOffset = new NativeArray<float2>(octaves, Allocator.TempJob);
@@ -96,8 +92,8 @@ public class MapDataInitSystem : SystemBase
         {
             widthJob = mapWidth,
             heightJob = mapHeight,
-            seedJob = seed,
-            scaleJob = scale,
+            seedJob = mapSeed,
+            scaleJob = mapScale,
             octavesJob = octaves,
             persistanceJob = settingData.persistance,
             lacunarityJob = lacunarity,
@@ -107,7 +103,7 @@ public class MapDataInitSystem : SystemBase
         };
         JobHandle jobHandle = perlinNoiseJob.Schedule();
         jobHandle.Complete();
-        octOffset.Dispose();
+        //octOffset.Dispose();
         DynamicBuffer<noiseMapBuffer> nmBuffer = GetBuffer<noiseMapBuffer>(MapSettingsEntity);
         for (int i = 0; i < nMap.Length; i++)
         {
@@ -116,8 +112,9 @@ public class MapDataInitSystem : SystemBase
             nmBuffer.Add(nMapElement);
         }
         nMap.Dispose();
+        octOffset.Dispose();
         #region Event Trigger End
-        _em.RemoveComponent<DataRenderer>(MapSettingsEntity);
+        //_em.RemoveComponent<DataRenderer>(MapSettingsEntity);
         _em.RemoveComponent<MapSettingsTag>(MapSettingsEntity);
         _em.RemoveComponent<Event_MapGen_AddSetData>(GetSingletonEntity<Event_MapGenTag>());
         #endregion Event Trigger End
@@ -128,14 +125,14 @@ public class MapDataInitSystem : SystemBase
     [BurstCompile]
     public struct PerlinNoiseJob : IJob
     {
-        public int widthJob;
-        public int heightJob;
-        public int seedJob;
-        public float scaleJob;
-        public int octavesJob;
-        public float persistanceJob;
-        public float lacunarityJob;
-        public float2 offsetJob;
+        [ReadOnly] public int widthJob;
+        [ReadOnly] public int heightJob;
+        [ReadOnly] public int seedJob;
+        [ReadOnly] public float scaleJob;
+        [ReadOnly] public int octavesJob;
+        [ReadOnly] public float persistanceJob;
+        [ReadOnly] public float lacunarityJob;
+        [ReadOnly] public float2 offsetJob;
 
         //returned Value
         public NativeArray<float> noiseMap;
@@ -202,7 +199,7 @@ public class MapDataInitSystem : SystemBase
             }
         }
     }
-
+    
     protected override void OnDestroy()
     {
         if (nMap.IsCreated)
@@ -218,6 +215,7 @@ public class MapDataInitSystem : SystemBase
         if (octOffset.IsCreated)
             octOffset.Dispose();
     }
+    
 }
 
 //TO DO : ADD PERLIN NOISE CALCUL job or job.witcode()

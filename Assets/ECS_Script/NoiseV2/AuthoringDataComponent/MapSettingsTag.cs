@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+
 [GenerateAuthoringComponent]
 public struct MapSettingsTag : IComponentData
 {
@@ -17,4 +18,16 @@ public struct MapSettingsTag : IComponentData
     public int seed;
     [Range(0, 2)]
     public int drawMode;
+    public float heightMultiplier;
+    [Range(0, 6)]
+    public int levelOfDetail;
+    /*
+    public enum DrawMode
+    {
+        NoiseMap,
+        ColourMap,
+        Mesh
+    };
+    public DrawMode drwMode;
+    */
 }

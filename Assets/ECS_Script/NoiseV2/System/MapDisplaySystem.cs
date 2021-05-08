@@ -20,10 +20,13 @@ public class MapDisplaySystem : SystemBase
     NativeArray<int> trianglesArray;
     NativeArray<float2> uvsArray;
 
+    //CurveValue MUST BE REPLACE IN FUTUR BY ANIMATION LIBRARY
+    NativeArray<float> curveHeightArray;
+
     EntityManager _em;
     Entity mapGenerator;
 
-    //Stopwatch sw;
+    Stopwatch sw;
     protected override void OnCreate()
     {
         var queryDescription = new EntityQueryDesc
@@ -34,10 +37,11 @@ public class MapDisplaySystem : SystemBase
         RequireForUpdate(GetEntityQuery(queryDescription));
         _em = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
+
     protected override void OnStartRunning()
     {
-        //sw = Stopwatch.StartNew();
-        //sw.Start();
+        sw = Stopwatch.StartNew();
+        sw.Start();
         mapGenerator = GetSingletonEntity<NoiseMapData>();
     }
     protected override void OnUpdate()
@@ -49,10 +53,10 @@ public class MapDisplaySystem : SystemBase
         int mapSurface = math.mul(mapWidth, mapHeight);
 
         DynamicBuffer<noiseMapBuffer> heightMap = GetBuffer<noiseMapBuffer>(mapGenerator);
-        //Color[] colorsMapArray = new Color[mapSurface];
-
         heightMapNativeArray = heightMap.ToNativeArray(Allocator.TempJob).Reinterpret<float>();
         colourMapNativeArray = new NativeArray<Color>(mapSurface, Allocator.TempJob);
+
+        #region JOB CALCULATION
         //=====================================================================================================
         // TEXTURE MAP calculation
         //=====================================================================================================
@@ -90,11 +94,25 @@ public class MapDisplaySystem : SystemBase
         //=====================================================================================================
         else if(drawmode == 2)
         {
-            verticesArray = new NativeArray<float3>(mapSurface, Allocator.TempJob);
-            uvsArray = new NativeArray<float2>(mapSurface, Allocator.TempJob);
-            trianglesArray = new NativeArray<int>(math.mul(math.mul(mapWidth - 1, mapHeight - 1), 6), Allocator.TempJob);
-            
+            int lvlDetail = GetComponent<levelOfDetailData>(mapGenerator).value;
+            int meshSimplificationIncrement = (lvlDetail == 0) ? 1 : math.mul(lvlDetail, 2);
+            int verticesPerLine = ((mapWidth - 1) / meshSimplificationIncrement) + 1;// 1 2 3 4 5 6 7 ... 241 (241-1)/2 (this imply 241 is a const because not all number are pow of 2)
+            //Size of the meshes now depending on the level of detail stored (enter when generated for now)
+            verticesArray = new NativeArray<float3>(((int)math.pow(verticesPerLine, 2)), Allocator.TempJob);
+            trianglesArray = new NativeArray<int>(math.mul((int)math.pow(verticesPerLine - 1, 2), 6), Allocator.TempJob);
+            uvsArray = new NativeArray<float2>(((int)math.pow(verticesPerLine, 2)), Allocator.TempJob);
+
+
             DynamicBuffer<TerrainTypeBuffer> regionsBuffer = GetBuffer<TerrainTypeBuffer>(mapGenerator);
+
+            //Temporary Solution for animation Curve
+            curveHeightArray = new NativeArray<float>(mapSurface, Allocator.TempJob);
+            var AnimCurve = _em.GetComponentData<MapHeightCurve>(mapGenerator).value;
+            for (int i = 0; i < mapSurface; i++)
+            {
+                curveHeightArray[i] = AnimCurve.Evaluate(heightMapNativeArray[i]);
+            }
+
             ColorMapJob colorMapJob = new ColorMapJob
             {
                 mWidth = mapWidth,
@@ -104,6 +122,7 @@ public class MapDisplaySystem : SystemBase
                 regionsBuffer = regionsBuffer,
             };
             JobHandle colorJobHandle = colorMapJob.Schedule();
+
             MeshDataJob meshDataJob = new MeshDataJob
             {
                 widthJob = mapWidth,
@@ -112,27 +131,39 @@ public class MapDisplaySystem : SystemBase
                 verticesJob = verticesArray,
                 trianglesJob = trianglesArray,
                 uvsJob = uvsArray,
+                heightMulJob = GetComponent<mapHeightMultiplierData>(mapGenerator).value,
+                curveJob = curveHeightArray,
+                levelOfDetailJob = lvlDetail,
+                meshSimplificationIncrementJob = meshSimplificationIncrement,
+                verticesPerLineJob = verticesPerLine,
             };
             JobHandle meshjobHandle = meshDataJob.Schedule();
             JobHandle.CompleteAll(ref colorJobHandle, ref meshjobHandle);
+            curveHeightArray.Dispose();
         }
+        #endregion JOB CALCULATION
 
         //=====================================================================================================
         // TEXTURE2D applied to the plane (TextureJob and ColorJob)
         //=====================================================================================================
-        //colourMapNativeArray.CopyTo(colorsMapArray);
         Texture2D texture2D = new Texture2D(mapWidth, mapHeight);
         texture2D.filterMode = FilterMode.Point;
         texture2D.wrapMode = TextureWrapMode.Clamp;
         texture2D.SetPixels(colourMapNativeArray.ToArray());
         texture2D.Apply();
 
+        var localToWorldScale = new NonUniformScale
+        {
+            Value = new float3(mapWidth, mapHeight, mapHeight)
+        };
+
+        //float4x4 scaleMesh = float4x4.Scale(mapWidth, mapHeight, mapHeight); //CAREFUL y need to be as big as the other vector points!
+        //float4x4 totScale = math.mul(_em.GetComponentData<LocalToWorld>(mapGenerator).Value, scaleMesh);
+        _em.SetComponentData(mapGenerator, localToWorldScale);
         if (drawmode == 0 || drawmode == 1)
         {
-            Renderer textureRender = _em.GetComponentData<RendererData>(mapGenerator).value;
-            textureRender.sharedMaterial.mainTexture = texture2D;
-            textureRender.transform.localScale = new float3(mapWidth, 1, mapHeight);
-            _em.SetComponentData(mapGenerator, new RendererData { value = textureRender });
+            var material = _em.GetSharedComponentData<RenderMesh>(mapGenerator).material;
+            material.mainTexture = texture2D;
         }
         else if(drawmode == 2)
         {
@@ -142,12 +173,20 @@ public class MapDisplaySystem : SystemBase
             mesh.uv = uvsArray.Reinterpret<Vector2>().ToArray();
             mesh.triangles = trianglesArray.ToArray();
             mesh.RecalculateNormals();
-
+            //other mesh
+            /*
             MeshFilter meshFilter = _em.GetComponentData<MeshFilterData>(mapGenerator).value;
             MeshRenderer meshRenderer = _em.GetComponentData<MeshRendererData>(mapGenerator).value;
-            _em.SetSharedComponentData(mapGenerator, new RenderMesh { material = _em.GetComponentData<MapMaterialData>(mapGenerator).MeshMat, mesh = mesh });
+            Renderer renderer = _em.GetComponentData<RendererData>(mapGenerator).value;
+            //renderer.transform.localScale = new float3(texture2D.width, 1, texture2D.height);
             meshFilter.sharedMesh = mesh;
             meshRenderer.sharedMaterial.mainTexture = texture2D;
+            */
+            //other mesh
+            var material = _em.GetSharedComponentData<RenderMesh>(mapGenerator).material;
+            material.mainTexture = texture2D;
+            _em.SetSharedComponentData(mapGenerator, new RenderMesh { mesh = mesh , material = _em.GetComponentData<MapMaterialData>(mapGenerator).MeshMat});
+            //_em.SetSharedComponentData(mapGenerator, new RenderMesh { material = material, mesh = mesh });
 
             verticesArray.Dispose();
             trianglesArray.Dispose();
@@ -160,10 +199,10 @@ public class MapDisplaySystem : SystemBase
         heightMapNativeArray.Dispose();
         _em.RemoveComponent<Event_MapGen_MapDisplay>(GetSingletonEntity<Event_MapGenTag>());
         #endregion Event Trigger End
-        //sw.Stop();
-        //UnityEngine.Debug.Log($"Elapsed Texture{drawmode} = {sw.Elapsed}");
+        sw.Stop();
+        UnityEngine.Debug.Log($"Elapsed Texture{drawmode} = {sw.Elapsed}");
     }
-
+    #region TEXTURE (Black/White) JOB
     /// <summary>
     /// Map Texture calculation (Black and white)
     /// </summary>
@@ -185,6 +224,9 @@ public class MapDisplaySystem : SystemBase
             }
         }
     }
+    #endregion TEXTURE (Black/White) JOB
+
+    #region COLORS MAP JOB
     /// <summary>
     /// Colour Map Cooration colors depends of the regions
     /// </summary>
@@ -215,15 +257,26 @@ public class MapDisplaySystem : SystemBase
             }
         }
     }
+    #endregion COLOR MAP JOB
+
+    #region MESH JOB
     /// <summary>
     /// Mesh Generation
     /// </summary>
     [BurstCompile]
     public struct MeshDataJob : IJob
     {
-        [ReadOnly]  public int widthJob;
-        [ReadOnly]  public int heightJob;
-        [ReadOnly]  public NativeArray<float> noiseMapJob;
+        [ReadOnly] public int widthJob;
+        [ReadOnly] public int heightJob;
+        [ReadOnly] public NativeArray<float> noiseMapJob;
+        [ReadOnly] public float heightMulJob;
+        [ReadOnly] public NativeArray<float> curveJob;
+
+        //Terrain Complexity(increase/Decrease
+        [ReadOnly] public int levelOfDetailJob;
+        [ReadOnly] public int meshSimplificationIncrementJob;
+        [ReadOnly] public int verticesPerLineJob;
+
         public NativeArray<float3> verticesJob;
         public NativeArray<int> trianglesJob;
         public NativeArray<float2> uvsJob;
@@ -235,13 +288,16 @@ public class MapDisplaySystem : SystemBase
             float topLeftZ = (heightJob - 1) / 2f;
 
             int vertexIndex = 0;
-            for (int y = 0; y < heightJob; y++)
+            for (int y = 0; y < heightJob; y+= meshSimplificationIncrementJob)
             {
-                for (int x = 0; x < widthJob; x++)
+                for (int x = 0; x < widthJob; x+= meshSimplificationIncrementJob)
                 {
-                    int4 tranglesVertex = new int4(vertexIndex, vertexIndex + widthJob + 1, vertexIndex + widthJob, vertexIndex + 1);
+                    int4 tranglesVertex = new int4(vertexIndex, vertexIndex + verticesPerLineJob + 1, vertexIndex + verticesPerLineJob, vertexIndex + 1);
 
-                    verticesJob[vertexIndex] = new float3(topLeftX + x, noiseMapJob[math.mad(y, widthJob, x)], topLeftZ - y);
+                    //int linearIndex = math.mad(y, widthJob, x); // Index in a Linear Array
+                    //float curveValue = animCurveJob.Evaluate(noiseMapJob[linearIndex]); //Value after evaluation in the animation Curve
+                    verticesJob[vertexIndex] = new float3(topLeftX + x, math.mul(curveJob[math.mad(y, widthJob, x)], heightMulJob), topLeftZ - y);
+
                     uvsJob[vertexIndex] = new float2(x / (float)widthJob, y / (float)heightJob);
 
                     if (x < widthJob - 1 && y < heightJob - 1)
@@ -260,6 +316,7 @@ public class MapDisplaySystem : SystemBase
             }
         }
     }
+    #endregion MESH JOB
     protected override void OnDestroy()
     {
         if (heightMapNativeArray.IsCreated)
@@ -286,4 +343,49 @@ public class MapDisplaySystem : SystemBase
         if (uvsArray.IsCreated)
             uvsArray.Dispose();
     }
+
+    /*
+    /// <summary>
+    /// THANKS ARGON!!!
+    /// </summary>
+    public struct SampledAnimationCurve : System.IDisposable
+    {
+        NativeArray<float> sampledFloat;
+        /// <param name="samples">Must be 2 or higher</param>
+        public SampledAnimationCurve(AnimationCurve ac, int samples)
+        {
+            sampledFloat = new NativeArray<float>(samples, Allocator.Persistent);
+            float timeFrom = ac.keys[0].time;
+            float timeTo = ac.keys[ac.keys.Length - 1].time;
+            float timeStep = (timeTo - timeFrom) / (samples - 1);
+
+            for (int i = 0; i < samples; i++)
+            {
+                sampledFloat[i] = ac.Evaluate(timeFrom + (i * timeStep));
+            }
+        }
+
+        public void Dispose()
+        {
+            sampledFloat.Dispose();
+        }
+
+        /// <param name="time">Must be from 0 to 1</param>
+        public float EvaluateLerp(float time)
+        {
+            int len = sampledFloat.Length - 1;
+            float clamp01 = time < 0 ? 0 : (time > 1 ? 1 : time);
+            float floatIndex = (clamp01 * len);
+            int floorIndex = (int)math.floor(floatIndex);
+            if (floorIndex == len)
+            {
+                return sampledFloat[len];
+            }
+
+            float lowerValue = sampledFloat[floorIndex];
+            float higherValue = sampledFloat[floorIndex + 1];
+            return math.lerp(lowerValue, higherValue, math.frac(floatIndex));
+        }
+    }
+    */
 }

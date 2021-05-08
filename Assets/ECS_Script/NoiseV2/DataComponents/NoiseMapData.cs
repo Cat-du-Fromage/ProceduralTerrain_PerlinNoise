@@ -2,8 +2,19 @@ using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Animation;
 
 public struct NoiseMapData : IComponentData{}
+
+public struct mapChunkSizeData : IComponentData
+{
+    public int value;
+}
+
+public struct mapHeightMultiplierData : IComponentData
+{
+    public float value;
+}
 
 public struct width : IComponentData
 {
@@ -49,12 +60,12 @@ public struct offsetData : IComponentData
 {
     public float2 value;
 }
-
+/*
 public class textureData : IComponentData
 {
     public UnityEngine.Texture2D value;
 }
-
+*/
 public class RendererData : IComponentData
 {
     public UnityEngine.Renderer value;
@@ -71,6 +82,11 @@ public class MeshRendererData : IComponentData
 }
 
 public struct drawModeData : IComponentData
+{
+    public int value;
+}
+
+public struct levelOfDetailData : IComponentData
 {
     public int value;
 }

@@ -154,8 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawMode: 1
-  mapWidth: 100
-  mapHeight: 100
+  levelOfDetail: 0
   noiseScale: 10.82
   octaves: 4
   persistance: 1
@@ -164,6 +163,31 @@ MonoBehaviour:
   offset:
     x: 2.6
     y: -0.15
+  meshHeightMultiplier: 0
+  meshHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   autoUpdate: 1
   regions:
   - name: WaterDeep
@@ -332,7 +356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &441589626
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -391,7 +415,7 @@ Transform:
   m_GameObject: {fileID: 441589625}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 241, y: 10, z: 241}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
@@ -715,7 +739,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 200000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -741,8 +765,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.4, y: 800, z: 0}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 102, y: 60000, z: 26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -839,13 +863,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1364416403}
   - component: {fileID: 1364416402}
+  - component: {fileID: 1364416411}
   - component: {fileID: 1364416405}
   - component: {fileID: 1364416404}
   - component: {fileID: 1364416406}
   - component: {fileID: 1364416408}
   - component: {fileID: 1364416407}
-  - component: {fileID: 1364416409}
   - component: {fileID: 1364416410}
+  - component: {fileID: 1364416409}
   m_Layer: 0
   m_Name: MapSettingsECS
   m_TagString: Untagged
@@ -867,15 +892,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
-  scale: 10.82
-  octaves: 4
-  persistance: 1
-  lacunarity: 1.63
+  scale: 55
+  octaves: 5
+  persistance: 0.5
+  lacunarity: 2
   offset:
     x: 2.6
     y: -0.15
-  seed: 65
+  seed: 10
   drawMode: 2
+  heightMultiplier: 20
+  levelOfDetail: 1
 --- !u!4 &1364416403
 Transform:
   m_ObjectHideFlags: 0
@@ -885,7 +912,7 @@ Transform:
   m_GameObject: {fileID: 1364416401}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 100, y: 1, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
@@ -915,7 +942,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6c7c070eba87524eb042ff57fb92ea5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderer: {fileID: 759915948}
+  renderer: {fileID: 441589626}
   meshFilter: {fileID: 441589627}
   meshRenderer: {fileID: 441589626}
 --- !u!114 &1364416406
@@ -930,12 +957,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95a8c3ebd9c3ca847a6450867818bd85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Ocean: 0.3
-  Coast: 0.4
-  Sand: 0.45
-  Plain: 0.55
-  Forest: 0.6
-  Tundra: 0.7
+  Ocean: 0.45
+  Coast: 0.5
+  Sand: 0.55
+  Plain: 0.65
+  Forest: 0.7
+  Tundra: 0.8
   Mountain: 0.9
   Snow: 1
 --- !u!23 &1364416407
@@ -1022,6 +1049,51 @@ MonoBehaviour:
   MatMap: {fileID: 2100000, guid: 5a10f61cebf46d9449c54da5766f4256, type: 2}
   MeshMat: {fileID: 2100000, guid: ea2dc24b645aa27458aa4fca5546205a, type: 2}
   mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1364416411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364416401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abc7d1dd7acb8ca44a4f7de7f2095d9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  value:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.4011133
+      value: -0.00008637365
+      inSlope: Infinity
+      outSlope: 0
+      tangentMode: 7
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.06431328
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 5.2475824
+      outSlope: 5.2475824
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.029992878
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1447743504
 GameObject:
   m_ObjectHideFlags: 0
