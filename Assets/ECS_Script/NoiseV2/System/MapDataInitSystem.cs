@@ -172,7 +172,7 @@ public class MapDataInitSystem : SystemBase
                         float sampleY = math.mul((y - halfHeight) / scaleJob, frequency) + octOffsetArray[i].y;
                         float2 sampleXY = new float2(sampleX, sampleY);
 
-                        float pNoiseValue = cnoise(sampleXY);
+                        float pNoiseValue = snoise(sampleXY);
                         noiseHeight = math.mad(pNoiseValue, amplitude, noiseHeight);
                         //amplitude : decrease each octaves; frequency : increase each octaves
                         amplitude = math.mul(amplitude, persistanceJob);

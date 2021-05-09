@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+/// <summary>
+/// Purpose:
+/// 
+/// </summary>
 public class EndlessTerrain : MonoBehaviour
 {
     public const float maxViewDistance = 450;
@@ -62,7 +66,16 @@ public class EndlessTerrain : MonoBehaviour
             }
         }
     }
-
+    #region Terrain CHUNK
+    /// <summary>
+    /// DATA INVOLVED
+    /// Mesh
+    /// Position(float2)
+    /// Bounds
+    /// RenderMesh(meshfilter + MeshRenderer)
+    /// Material
+    /// 
+    /// </summary>
     public class TerrainChunk
     {
         GameObject meshObject;
@@ -117,4 +130,5 @@ public class EndlessTerrain : MonoBehaviour
             return meshObject.activeSelf;
         }
     }
+    #endregion Terrain CHUNK
 }

@@ -84,7 +84,7 @@ public static class Noise
 
                     float2 sampleXY = new float2(sampleX, sampleY);
 
-                    float perlinValue = math.mul(cnoise(sampleXY), 2) - 1; //float2 ok here since we calculate a value and do not store them;
+                    float perlinValue = math.mul(snoise(sampleXY), 2) - 1; //float2 ok here since we calculate a value and do not store them;
                     //float perlinValue = math.mul(snoise(sampleXY), 2) - 1; //float2 ok here since we calculate a value and do not store them;
                     noiseHeight += math.mul(perlinValue, amplitude);
 
