@@ -12,6 +12,7 @@ public class EndlessTerrain : MonoBehaviour
     public Material mapMaterial;
     public static float2 viewerPosition;
     static MapGenerator mapGenerator;
+    public float2 LastPosViewer;
 
     int chunkSize;
     int chunksVisibleInViewDst;
@@ -24,12 +25,17 @@ public class EndlessTerrain : MonoBehaviour
         mapGenerator = FindObjectOfType<MapGenerator>();
         chunkSize = MapGenerator.mapChunkSize - 1;
         chunksVisibleInViewDst = (int)math.round(maxViewDistance / chunkSize);
+        //Debug.Log($"chunksVisibleInViewDst = {chunksVisibleInViewDst}");
     }
 
     void Update()
     {
         viewerPosition = new float2(viewer.position.x, viewer.position.z);
-        UpdateVisibleChunks();
+        if(!viewerPosition.Equals(LastPosViewer) || terrainChunkDico.Count == 0) // for some reason chunks created are disable
+        {
+            UpdateVisibleChunks();
+            LastPosViewer = viewerPosition;
+        }
     }
     /// <summary>
     /// Determin when chunks has to be generated on removed depending on the "viewer" position on the map
@@ -45,13 +51,14 @@ public class EndlessTerrain : MonoBehaviour
         //Position relative to chunks(not real coord) (Position/chunksize)
         int currentChunkCoordX = (int)math.round(viewerPosition.x / chunkSize);
         int currentChunkCoordY = (int)math.round(viewerPosition.y / chunkSize);
-
+        //Debug.Log($"currentChunkCoordX = {currentChunkCoordX}, currentChunkCoordY = {currentChunkCoordY}");
         for(int y_Offset = -chunksVisibleInViewDst; y_Offset <= chunksVisibleInViewDst; y_Offset++)
         {
             for (int x_Offset = -chunksVisibleInViewDst; x_Offset <= chunksVisibleInViewDst; x_Offset++)
             {
                 float2 viewedChunkCoord = new float2(currentChunkCoordX + x_Offset, currentChunkCoordY + y_Offset);
-                if(terrainChunkDico.ContainsKey(viewedChunkCoord))
+                //Debug.Log($"viewedChunkCoord = {viewedChunkCoord}");
+                if (terrainChunkDico.ContainsKey(viewedChunkCoord))
                 {
                     terrainChunkDico[viewedChunkCoord].UpdateTerrainChunk();
                     if(terrainChunkDico[viewedChunkCoord].IsVisible())

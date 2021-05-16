@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Animation;
+using Unity.Rendering;
 
 public struct NoiseMapData : IComponentData{}
 
@@ -94,5 +95,5 @@ public struct levelOfDetailData : IComponentData
 public struct TerrainTypeBuffer : IBufferElementData
 {
     public float height;
-    public UnityEngine.Color colour;
+    public MaterialColor colour;
 }

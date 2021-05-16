@@ -13,7 +13,7 @@ public class MapDisplaySystem : SystemBase
 {
     // Retrieve settings DRAWMODE
     NativeArray<float> heightMapNativeArray;
-    NativeArray<Color> colourMapNativeArray;
+    NativeArray<MaterialColor> colourMapNativeArray;
 
     //Mesh Array
     NativeArray<float3> verticesArray;
@@ -54,7 +54,7 @@ public class MapDisplaySystem : SystemBase
 
         DynamicBuffer<noiseMapBuffer> heightMap = GetBuffer<noiseMapBuffer>(mapGenerator);
         heightMapNativeArray = heightMap.ToNativeArray(Allocator.TempJob).Reinterpret<float>();
-        colourMapNativeArray = new NativeArray<Color>(mapSurface, Allocator.TempJob);
+        colourMapNativeArray = new NativeArray<MaterialColor>(mapSurface, Allocator.TempJob);
 
         #region JOB CALCULATION
         //=====================================================================================================
@@ -67,7 +67,7 @@ public class MapDisplaySystem : SystemBase
                 mWidth = mapWidth,
                 mHeight = mapHeight,
                 noiseMapJob = heightMapNativeArray,
-                colorsJob = colourMapNativeArray,
+                colorsJob = colourMapNativeArray.Reinterpret<Color>(),
             };
             JobHandle jobHandle = textureMapJob.Schedule();
             jobHandle.Complete();
@@ -149,7 +149,7 @@ public class MapDisplaySystem : SystemBase
         Texture2D texture2D = new Texture2D(mapWidth, mapHeight);
         texture2D.filterMode = FilterMode.Point;
         texture2D.wrapMode = TextureWrapMode.Clamp;
-        texture2D.SetPixels(colourMapNativeArray.ToArray());
+        texture2D.SetPixels(colourMapNativeArray.Reinterpret<Color>().ToArray());
         texture2D.Apply();
 
         var localToWorldScale = new NonUniformScale
@@ -233,7 +233,7 @@ public class MapDisplaySystem : SystemBase
     [BurstCompile]
     public struct ColorMapJob : IJob
     {
-        public NativeArray<Color> colorsJob;
+        public NativeArray<MaterialColor> colorsJob;
         [ReadOnly] public NativeArray<float> noiseMapJob;
         [ReadOnly] public int mWidth;
         [ReadOnly] public int mHeight;
