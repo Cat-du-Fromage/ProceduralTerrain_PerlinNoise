@@ -230,6 +230,8 @@ GameObject:
   - component: {fileID: 286642112}
   - component: {fileID: 286642111}
   - component: {fileID: 286642110}
+  - component: {fileID: 286642113}
+  - component: {fileID: 286642114}
   m_Layer: 0
   m_Name: ChunksHolder
   m_TagString: Untagged
@@ -276,6 +278,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &286642113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 286642109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfd2b8b3864c85b40bcf7932ddd16be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &286642114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 286642109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e1ec6dfde71c294eb151e2eeee56c71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Values: []
 --- !u!1 &441589625
 GameObject:
   m_ObjectHideFlags: 0

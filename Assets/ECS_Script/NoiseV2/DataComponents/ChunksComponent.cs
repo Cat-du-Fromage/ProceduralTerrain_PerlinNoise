@@ -7,6 +7,8 @@ using Unity.Rendering;
 [Serializable]
 public struct Tag_Chunks : IComponentData {}
 
+public struct Tag_NonInitChunk : IComponentData { }
+
 public struct ViewerPosition : IComponentData
 {
     public float3 value;
