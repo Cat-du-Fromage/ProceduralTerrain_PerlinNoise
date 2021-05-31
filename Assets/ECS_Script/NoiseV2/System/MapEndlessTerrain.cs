@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using Unity.Rendering;
-
+/*
 public class MapEndlessTerrain : SystemBase
 {
     BeginInitializationEntityCommandBufferSystem Begin_init;
@@ -15,6 +15,7 @@ public class MapEndlessTerrain : SystemBase
     EntityManager _em;
     NativeHashMap<float2, Entity> Terrainchunks;
     NativeArray<float2> chunksPosition;
+    EntityArchetype chunkArchetype;
 
     Entity cameraEntity;
     float2 viewerPosition;
@@ -44,7 +45,7 @@ public class MapEndlessTerrain : SystemBase
     protected override void OnStartRunning()
     {
         chunksVisibleInViewDst = (int)math.round(maxViewDistance / chunkSize);
-        /*
+        
         chunkArchetype = _em.CreateArchetype
             (
             typeof(Tag_Chunks),
@@ -54,7 +55,7 @@ public class MapEndlessTerrain : SystemBase
             typeof(RenderMesh),
             typeof(Child)
             );
-        */
+        
         cameraEntity = GetSingletonEntity<CameraTag>();
     }
 
@@ -85,43 +86,35 @@ public class MapEndlessTerrain : SystemBase
             var ChunkEntitiesBuffer = _em.GetBuffer<Buffer_ChunksHolder_Chunks>(chunksHolder);
             //Only set GridPosition for now
             EntityCommandBuffer.ParallelWriter ecb = Begin_init.CreateCommandBuffer().AsParallelWriter();
-
-            /*
-            Entities
-                .WithDisposeOnCompletion(chunksInViewPosition)
-                .WithAll<ChunksHolder_Tag>()
-                .ForEach((Entity ent, int entityInQueryIndex, ref DynamicBuffer<Buffer_ChunksHolder_Position> chunkGridPos, ref DynamicBuffer<Buffer_ChunksHolder_Chunks> chunkEntity) => 
-                {
-                    var chunkArchetype = _em.CreateArchetype(
-                                                        typeof(Tag_Chunks),
-                                                        typeof(Tag_NonInitChunk),
-                                                        typeof(GridPosition_Data),
-                                                        typeof(RenderBounds),
-                                                        typeof(RenderMesh),
-                                                        typeof(Child)
-                                                        );
-                    for (int i = 0; i < chunksInViewPosition.Length; i++)
-                    {
-                        //DynamicBuffer<Buffer_ChunksHolder_Position> HighlightsBuffer = GetBuffer<Buffer_ChunksHolder_Position>(ent);
-                        //DynamicBuffer<Buffer_ChunksHolder_Chunks> PreselectBuffer = GetBuffer<Buffer_ChunksHolder_Chunks>(ent);
-                        var newChunk = ecb.CreateEntity(entityInQueryIndex, chunkArchetype);
-                        ecb.SetComponent(entityInQueryIndex, newChunk, new GridPosition_Data { value = chunksInViewPosition[i] });
-                        chunkGridPos.Add(new Buffer_ChunksHolder_Position { chunkGridPos = chunksInViewPosition[i] });
-                        chunkEntity.Add(new Buffer_ChunksHolder_Chunks { chunk = newChunk });
-
-                    }
-                }).Schedule();
-            */
+            
+            
+            //Entities
+            //    .WithDisposeOnCompletion(chunksInViewPosition)
+            //    .WithAll<ChunksHolder_Tag>()
+            //    .ForEach((Entity ent, int entityInQueryIndex, ref DynamicBuffer<Buffer_ChunksHolder_Position> chunkGridPos, ref DynamicBuffer<Buffer_ChunksHolder_Chunks> chunkEntity) => 
+            //    {
+            //        for (int i = 0; i < chunksInViewPosition.Length; i++)
+            //        {
+            //            //DynamicBuffer<Buffer_ChunksHolder_Position> HighlightsBuffer = GetBuffer<Buffer_ChunksHolder_Position>(ent);
+            //            //DynamicBuffer<Buffer_ChunksHolder_Chunks> PreselectBuffer = GetBuffer<Buffer_ChunksHolder_Chunks>(ent);
+            //            var newChunk = ecb.CreateEntity(entityInQueryIndex, chunkArchetype);
+            //            ecb.SetComponent(entityInQueryIndex, newChunk, new GridPosition_Data { value = chunksInViewPosition[i] });
+            //            chunkGridPos.Add(new Buffer_ChunksHolder_Position { chunkGridPos = chunksInViewPosition[i] });
+            //           chunkEntity.Add(new Buffer_ChunksHolder_Chunks { chunk = newChunk });
+            //
+             //       }
+            //    }).Schedule();
+            
             Begin_init.AddJobHandleForProducer(Dependency);
-            /*
-            for (int i = 0; i < chunksInViewPosition.Length; i++)
-            {
-                var newChunk = _em.CreateEntity(chunkArchetype);
-                _em.SetComponentData(newChunk, new GridPosition_Data { value = chunksInViewPosition[i] });
-                ChunkGridPosBuffer.Add(new Buffer_ChunksHolder_Position { chunkGridPos = chunksInViewPosition[i] });
-                ChunkEntitiesBuffer.Add(new Buffer_ChunksHolder_Chunks { chunk = newChunk });
-            }
-            */
+            
+            //for (int i = 0; i < chunksInViewPosition.Length; i++)
+            //{
+            //    var newChunk = _em.CreateEntity(chunkArchetype);
+            //   _em.SetComponentData(newChunk, new GridPosition_Data { value = chunksInViewPosition[i] });
+            //    ChunkGridPosBuffer.Add(new Buffer_ChunksHolder_Position { chunkGridPos = chunksInViewPosition[i] });
+            //    ChunkEntitiesBuffer.Add(new Buffer_ChunksHolder_Chunks { chunk = newChunk });
+            //}
+            
             //chunksInViewPosition.Dispose();
             //JOB terrain to display
             //chunksPosition.Dispose();
@@ -190,4 +183,4 @@ public struct TerrainChunkECS
 {
 
 }
-        
+        */

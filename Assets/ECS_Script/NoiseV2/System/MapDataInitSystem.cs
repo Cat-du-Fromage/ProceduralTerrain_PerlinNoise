@@ -44,7 +44,10 @@ public class MapDataInitSystem : SystemBase
 
         //NEED TO CONVERT ALL THIS SHIT TO A BLOB ASSET!
         _em.AddComponent<NoiseMapData>(MapSettingsEntity);
-        _em.AddComponentData(MapSettingsEntity, new mapChunkSizeData {value = 241});
+        _em.AddComponentData(MapSettingsEntity, new mapChunkSizeData { value = 241 });
+        _em.AddComponentData(MapSettingsEntity, new maxViewDistanceData { value = 450 });
+        //CAREFUL if float is not precise on division below, it will be interpreted as a int(removing the int at the beginning don't throw an error as it is expected to return a int and math.round return a float) maybe a bug from unity?
+        _em.AddComponentData(MapSettingsEntity, new chunksVisibleInViewDstData { value = (int)math.round(GetComponent< maxViewDistanceData >(MapSettingsEntity).value / (GetComponent<mapChunkSizeData>(MapSettingsEntity).value - 1)) });
         _em.AddComponentData(MapSettingsEntity, new mapHeightMultiplierData { value = settingData.heightMultiplier });
         _em.AddComponentData(MapSettingsEntity, new width {value = _em.GetComponentData<mapChunkSizeData>(MapSettingsEntity).value });
         _em.AddComponentData(MapSettingsEntity, new height { value = _em.GetComponentData<mapChunkSizeData>(MapSettingsEntity).value });

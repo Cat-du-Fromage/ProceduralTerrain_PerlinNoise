@@ -91,9 +91,23 @@ public struct levelOfDetailData : IComponentData
 {
     public int value;
 }
+public struct maxViewDistanceData : IComponentData
+{
+    public float value;
+}
+
+public struct chunksVisibleInViewDstData : IComponentData
+{
+    public int value;
+}
 
 public struct TerrainTypeBuffer : IBufferElementData
 {
     public float height;
     public MaterialColor colour;
+}
+
+public struct BlobTest : IBufferElementData
+{
+    public BlobAssetReference<NativeHashMap<int,Entity>> height;
 }

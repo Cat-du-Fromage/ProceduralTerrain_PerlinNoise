@@ -897,7 +897,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
-  scale: 55
+  scale: 60
   octaves: 5
   persistance: 0.5
   lacunarity: 2
@@ -962,9 +962,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95a8c3ebd9c3ca847a6450867818bd85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Ocean: 0.45
-  Coast: 0.5
-  Sand: 0.55
+  Ocean: 0.35
+  Coast: 0.45
+  Sand: 0.52
   Plain: 0.65
   Forest: 0.7
   Tundra: 0.8
@@ -1119,7 +1119,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.4011133
+      time: 0.44896486
       value: -0.00008637365
       inSlope: Infinity
       outSlope: 0
